@@ -1,3 +1,5 @@
+const { default: axios } = require("axios");
+
 const cardList = document.querySelector("#card-list");
 
 const trunc = (text, maxLenght) =>
@@ -196,22 +198,20 @@ const renderCards = (products) => {
 };
 
 const getCards = () => {
-    fetch("https://api.escuelajs.co/api/v1/products?offset=0&limit=10")
-        .then((response) => response.json())
-        .then((data) => {
-            renderCards(data);
-            const deleteBtns = document.querySelectorAll(".delete-btn");
-            deleteBtns.forEach((btn) => {
-                btn.addEventListener("click", () => {
-                    const productId = btn.id;
-                    deleteProduct(productId);
-                    btn.closest(".card").remove();
-                    document.querySelector(".modal-backdrop").remove();
-                    document.body.style = "";
-                });
+    axios.get("https://api.escuelajs.co/api/v1/products?offset=0&limit=10")
+    .then(response => {
+        renderCards(response.data)
+        const deleteBtns = document.querySelectorAll(".delete-btn");
+        deleteBtns.forEach((btn) => {
+            btn.addEventListener("click", () => {
+                const productId = btn.id;
+                deleteProduct(productId);
+                btn.closest(".card").remove();
+                document.querySelector(".modal-backdrop").remove();
+                document.body.style = "";
             });
-
-            const editProductForms =
+        });
+        const editProductForms =
                 document.querySelectorAll("#edit-product-form");
 
             editProductForms.forEach((editProductForm) => {
@@ -223,16 +223,15 @@ const getCards = () => {
                     document.body.style = "";
                 });
             });
-        });
+    })
 };
 
 getCards();
 
 const deleteProduct = (productId) => {
-    fetch(`https://api.escuelajs.co/api/v1/products/${productId}`, {
-        method: "DELETE",
-    }).then(getCards);
-};
+    axios.delete(`https://api.escuelajs.co/api/v1/products/${productId}`)
+    .then(getCards);
+} 
 
 const editProduct = (productId) => {
     const title = document.querySelector("#edit-product-title").value;
@@ -248,13 +247,9 @@ const editProduct = (productId) => {
         images: ["https://placeimg.com/640/480/any"],
     };
 
-    fetch(`https://api.escuelajs.co/api/v1/products/${productId}`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(productToEdit),
-    }).then(getCards);
+
+    axios.put(`https://api.escuelajs.co/api/v1/products/${productId}` , productToEdit)
+    .then(getCards);
 };
 
 const addBtn = document.querySelector("#add-btn");
@@ -273,14 +268,8 @@ const addProduct = () => {
         categoryId,
         images: ["https://placeimg.com/640/480/any"],
     };
-
-    fetch("https://api.escuelajs.co/api/v1/products", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-        },
-        body: JSON.stringify(productToAdd),
-    });
+    
+    axios.post(`https://api.escuelajs.co/api/v1/products` , productToAdd)
 };
 
 addProductForm.addEventListener("submit", (e) => {

@@ -1,9 +1,4 @@
-const { default: axios } = require("axios");
-
-const cardList = document.querySelector("#card-list");
-
-const trunc = (text, maxLenght) =>
-    text?.length > maxLenght ? text?.substring(0, maxLenght - 3) + "..." : text;
+import {cardList,trunc,deleteProduct} from "./request.js";
 
 const deleteModalMarkup = (productTitle, productId) => {
     return `
@@ -227,11 +222,6 @@ const getCards = () => {
 };
 
 getCards();
-
-const deleteProduct = (productId) => {
-    axios.delete(`https://api.escuelajs.co/api/v1/products/${productId}`)
-    .then(getCards);
-} 
 
 const editProduct = (productId) => {
     const title = document.querySelector("#edit-product-title").value;
